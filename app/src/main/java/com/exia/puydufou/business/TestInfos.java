@@ -1,8 +1,5 @@
 package com.exia.puydufou.business;
 
-import android.graphics.Bitmap;
-
-import com.exia.puydufou.Storage;
 import com.exia.puydufou.entity.Boutique;
 import com.exia.puydufou.entity.Spectacle;
 

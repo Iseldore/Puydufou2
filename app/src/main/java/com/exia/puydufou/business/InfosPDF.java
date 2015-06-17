@@ -4,7 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 
 import com.exia.puydufou.data.SoapCommunicator;
-import com.exia.puydufou.Storage;
+import com.exia.puydufou.common.Storage;
 import com.exia.puydufou.entity.Boutique;
 import com.exia.puydufou.entity.Spectacle;
 

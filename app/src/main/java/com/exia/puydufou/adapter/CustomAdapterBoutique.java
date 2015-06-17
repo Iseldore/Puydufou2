@@ -11,7 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.exia.puydufou.R;
-import com.exia.puydufou.Storage;
+import com.exia.puydufou.common.Storage;
 import com.exia.puydufou.entity.Boutique;
 
 import java.util.List;
