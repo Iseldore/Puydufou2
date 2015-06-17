@@ -3,67 +3,145 @@ package com.exia.puydufou.fragments;
 /**
  * Created by Iseldore on 17/06/2015.
  */
-import android.support.v4.app.FragmentActivity;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.view.Menu;
+import android.widget.TextView;
 
 import com.exia.puydufou.R;
+import com.exia.puydufou.entity.Boutique;
+import com.exia.puydufou.entity.Spectacle;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapsFragment extends FragmentActivity {
+import java.util.Objects;
 
-    private GoogleMap mMap; // Might be null if Google Play services APK is not available.
+public class MapsFragment extends FragmentActivity implements LocationListener {
+
+    GoogleMap googleMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        setUpMapIfNeeded();
+
+        Object object = (Object) getIntent().getSerializableExtra("object");
+        double latitude = 0;
+        double longitude = 0;
+        String nom = null;
+
+        if(object.getClass() == Spectacle.class){
+            Spectacle spectacle = (Spectacle) object;
+            latitude = spectacle.getLatitude();
+            longitude = spectacle.getLongitude();
+            nom = spectacle.getNom_spectacle();
+        }
+        else if(object.getClass() == Boutique.class){
+            Boutique boutique = (Boutique) object;
+            latitude = boutique.getLatitude();
+            longitude = boutique.getLongitude();
+            nom = boutique.getNomBoutique();
+        }
+
+        // Getting reference to the SupportMapFragment of activity_main.xml
+        SupportMapFragment fm = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.googlemap);
+
+        // Getting GoogleMap object from the fragment
+        googleMap = fm.getMap();
+
+        Marker marker = googleMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title(nom));
+        // Enabling MyLocation Layer of Google Map
+        googleMap.setMyLocationEnabled(true);
+
+
+        // Getting LocationManager object from System Service LOCATION_SERVICE
+        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+        // Creating a criteria object to retrieve provider
+        Criteria criteria = new Criteria();
+
+        // Getting the name of the best provider
+        String provider = locationManager.getBestProvider(criteria, true);
+
+        // Getting Current Location
+        Location location = locationManager.getLastKnownLocation(provider);
+
+        if(location!=null){
+           // onLocationChanged(location);
+        }
+
+        final LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        builder.include(marker.getPosition());
+        LatLng current = new LatLng(location.getLatitude(), location.getLongitude());
+        builder.include(current);
+        LatLngBounds bounds = builder.build();
+        int padding = 5; // offset from edges of the map in pixels
+
+        final CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+
+        //googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+
+
+        googleMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
+            @Override
+            public void onMapLoaded() {
+                googleMap.animateCamera(cu);
+            }
+        });
+
+        locationManager.requestLocationUpdates(provider, 20000, 0, this);
+
+    }
+
+
+    @Override
+    public void onLocationChanged(Location location) {
+/*
+        //TextView tvLocation = (TextView) findViewById(R.id.googlemap);
+
+        // Getting latitude of the current location
+        double latitude = location.getLatitude();
+
+        // Getting longitude of the current location
+        double longitude = location.getLongitude();
+
+        // Creating a LatLng object for the current location
+        LatLng latLng = new LatLng(latitude, longitude);
+
+        // Showing the current location in Google Map
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+
+        // Zoom in the Google Map
+        googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+
+        // Setting latitude and longitude in the TextView tv_location
+        //tvLocation.setText("Latitude:" +  latitude  + ", Longitude:"+ longitude );
+*/
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        setUpMapIfNeeded();
+    public void onProviderDisabled(String provider) {
+        // TODO Auto-generated method stub
     }
 
-    /**
-     * Sets up the map if it is possible to do so (i.e., the Google Play services APK is correctly
-     * installed) and the map has not already been instantiated.. This will ensure that we only ever
-     * call {@link #setUpMap()} once when {@link #mMap} is not null.
-     * <p/>
-     * If it isn't installed {@link SupportMapFragment} (and
-     * {@link com.google.android.gms.maps.MapView MapView}) will show a prompt for the user to
-     * install/update the Google Play services APK on their device.
-     * <p/>
-     * A user can return to this FragmentActivity after following the prompt and correctly
-     * installing/updating/enabling the Google Play services. Since the FragmentActivity may not
-     * have been completely destroyed during this process (it is likely that it would only be
-     * stopped or paused), {@link #onCreate(Bundle)} may not be called again so we should call this
-     * method in {@link #onResume()} to guarantee that it will be called.
-     */
-    private void setUpMapIfNeeded() {
-        // Do a null check to confirm that we have not already instantiated the map.
-        if (mMap == null) {
-            // Try to obtain the map from the SupportMapFragment.
-            mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
-                    .getMap();
-            // Check if we were successful in obtaining the map.
-            if (mMap != null) {
-                setUpMap();
-            }
-        }
+    @Override
+    public void onProviderEnabled(String provider) {
+        // TODO Auto-generated method stub
     }
 
-    /**
-     * This is where we can add markers or lines, add listeners or move the camera. In this case, we
-     * just add a marker near Africa.
-     * <p/>
-     * This should only be called once and when we are sure that {@link #mMap} is not null.
-     */
-    private void setUpMap() {
-        mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+        // TODO Auto-generated method stub
     }
+
 }

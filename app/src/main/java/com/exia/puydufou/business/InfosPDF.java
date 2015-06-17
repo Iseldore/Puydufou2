@@ -87,6 +87,10 @@ public class InfosPDF {
             spectacle.setNb_notes(Integer.parseInt(note.getPropertyAsString("nbNotes")));
             spectacle.setNote_moy(Double.parseDouble(note.getPropertyAsString("nbNotes")));
 
+            SoapObject gps = (SoapObject) soapObjectSp.getProperty("IDlocalisation");
+            spectacle.setLatitude(Double.parseDouble(gps.getPropertyAsString("latitude")));
+            spectacle.setLongitude(Double.parseDouble(gps.getPropertyAsString("longitude")));
+
             Storage storage = new Storage(context);
             System.err.println("http://10.176.130.60/PuyDuFou/img_spectacles/"+soapObjectSp.getPropertyAsString("urlSpectacle"));
             Bitmap bitmap = storage.getBitmap("http://10.176.130.60/PuyDuFou/img_spectacles/"+soapObjectSp.getPropertyAsString("urlSpectacle"));
