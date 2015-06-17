@@ -153,8 +153,6 @@ public class MainActivity extends Activity {
         }
         // Handle action bar actions click
         switch (item.getItemId()) {
-            case R.id.action_settings:
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -163,6 +161,7 @@ public class MainActivity extends Activity {
     /* *
      * Called when invalidateOptionsMenu() is triggered
      */
+    /*
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         // if nav drawer is opened, hide the action items
@@ -170,7 +169,7 @@ public class MainActivity extends Activity {
         menu.findItem(R.id.action_settings).setVisible(!drawerOpen);
         return super.onPrepareOptionsMenu(menu);
     }
-
+*/
     /**
      * Diplaying fragment view for selected nav drawer list item
      * */
