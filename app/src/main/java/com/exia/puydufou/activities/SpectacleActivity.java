@@ -20,7 +20,7 @@ public class SpectacleActivity extends Activity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.spectacle);
-        spectacle = (Spectacle) getIntent().getSerializableExtra("spectacle");
+        spectacle = (Spectacle) getIntent().getSerializableExtra("object");
 
         TextView nom = (TextView) findViewById(R.id.nomSpectacle);
         TextView infos = (TextView) findViewById(R.id.infoSpectacle);
@@ -34,7 +34,7 @@ public class SpectacleActivity extends Activity{
             public void onClick(View v) {
                 Intent t = new Intent(SpectacleActivity.this, MapsFragment.class);
                 Bundle mBundle = new Bundle();
-                mBundle.putSerializable("enlevement", "..");
+                mBundle.putSerializable("spectacle", spectacle);
                 t.putExtras(mBundle);
                 SpectacleActivity.this.startActivity(t);
             }
