@@ -102,7 +102,7 @@ public class SpectaclesFragment extends Fragment implements AsyncResponse{
         @Override
         protected List<Spectacle> doInBackground(Void... params) {
             InfosPDF infos = new InfosPDF(thisView.getContext());
-            List<Spectacle> list = infos.getAllSpectacles();
+            List<Spectacle> list = infos.reallyGetAllSpectacles();
             return list;
         }
 

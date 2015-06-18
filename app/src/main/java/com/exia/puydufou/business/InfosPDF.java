@@ -60,6 +60,22 @@ public class InfosPDF {
         return liste;
     }
 
+    public List<Spectacle> reallyGetAllSpectacles() {
+        SoapObject request = new SoapObject(NAMESPACE, METHOD_NAME_GET_PLANNING_WITH_HORAIRE);
+        SoapObject result = sc.sendRequest(request);
+        if(result == null)
+            return null;
+
+        List<Spectacle> liste = new ArrayList<>();
+
+        for (int i = 0; i < result.getPropertyCount(); i++) {
+            SoapObject soapObject = (SoapObject)result.getProperty(i);
+            Spectacle spectacle = getSpectacle(soapObject);
+            liste.add(spectacle);
+        }
+        return liste;
+    }
+
     public List<Spectacle> getAllSpectaclesWithHoraire() {
         SoapObject request = new SoapObject(NAMESPACE, METHOD_NAME_GET_PLANNING_WITH_HORAIRE);
         SoapObject result = sc.sendRequest(request);
