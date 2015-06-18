@@ -52,7 +52,7 @@ public class InformationsFragment extends Fragment {
 
         // Assign adapter to ListView
         listView.setAdapter(adapter);
-        planning.supprimerTable();
+
         Button button = (Button) rootView.findViewById(R.id.buttoninfos);
         button.setOnClickListener(new View.OnClickListener() {
             @Override

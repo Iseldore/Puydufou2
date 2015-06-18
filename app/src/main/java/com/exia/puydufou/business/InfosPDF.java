@@ -21,7 +21,7 @@ import java.util.List;
 /**
  * Created by Iseldore on 15/06/2015.
  */
-/*
+
 public class InfosPDF {
     private static final String METHOD_NAME_GET_BOUTIQUES = "getAllBoutiques";
     private SoapCommunicator sc;
@@ -202,7 +202,7 @@ public class InfosPDF {
         return liste;
     }
 }
-*/
+/*
 
 public class InfosPDF {
     private Context context;
@@ -265,3 +265,4 @@ public class InfosPDF {
         return null;
     }
 }
+*/

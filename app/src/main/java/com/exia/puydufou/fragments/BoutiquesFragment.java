@@ -26,7 +26,6 @@ import java.util.Map;
 public class BoutiquesFragment extends Fragment implements AsyncResponse {
     LoadBoutiqueFragment asyncTask = new LoadBoutiqueFragment();
     private List<Boutique> listObjects = new ArrayList<>();
-    InfosPDF infos;
     private CustomAdapterBoutique customAdapterBoutique;
     View thisView;
 

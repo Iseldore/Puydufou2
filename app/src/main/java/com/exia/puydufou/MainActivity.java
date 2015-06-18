@@ -191,18 +191,18 @@ public class MainActivity extends Activity {
                 break;
             case 1:
                 fragment = new PlanningFragment();
-                List<TaskObject> listTasks = infos.getBestPlanning();
+                /*List<TaskObject> listTasks = infos.getBestPlanning();
                 args.putSerializable("list", (ArrayList<TaskObject>) listTasks);
-                fragment.setArguments(args);
+                fragment.setArguments(args);*/
                 break;
             case 2:
                 fragment = new PlanningManuelFragment();
                 break;
             case 3:
                 fragment = new SpectaclesFragment();
-                List<Spectacle> listSpectacles = infos.getAllSpectacles();
+                /*List<Spectacle> listSpectacles = infos.getAllSpectacles();
                 args.putSerializable("list", (ArrayList<Spectacle>) listSpectacles);
-                fragment.setArguments(args);
+                fragment.setArguments(args);*/
                 break;
             case 4:
                 fragment = new PlanFragment();
@@ -212,9 +212,9 @@ public class MainActivity extends Activity {
                 break;
             case 6:
                 fragment = new BoutiquesFragment();
-                List<Boutique> listBoutiques = infos.getAllBoutiques();
+                /*List<Boutique> listBoutiques = infos.getAllBoutiques();
                 args.putSerializable("list", (ArrayList<Boutique>) listBoutiques);
-                fragment.setArguments(args);
+                fragment.setArguments(args);*/
                 break;
             case 7:
                 fragment = new InformationsFragment();

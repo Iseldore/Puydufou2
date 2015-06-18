@@ -1,7 +1,9 @@
 package com.exia.puydufou.fragments;
 
 import android.app.Fragment;
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +17,7 @@ import com.exia.puydufou.activities.SpectacleActivity;
 import com.exia.puydufou.adapter.CustomAdapterBoutique;
 import com.exia.puydufou.adapter.CustomAdapterTasks;
 import com.exia.puydufou.business.InfosPDF;
+import com.exia.puydufou.common.AsyncResponse;
 import com.exia.puydufou.entity.Boutique;
 import com.exia.puydufou.entity.Spectacle;
 import com.exia.puydufou.entity.TaskObject;
@@ -24,10 +27,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class PlanningFragment extends Fragment {
-
+public class PlanningFragment extends Fragment implements AsyncResponse {
+    LoadTaskFragment asyncTask = new LoadTaskFragment();
+    View thisView;
     private List<TaskObject> listObjects = new ArrayList<>();
-    InfosPDF infos;
     private CustomAdapterTasks customAdapterTasks;
 
     public PlanningFragment(){}
@@ -38,31 +41,9 @@ public class PlanningFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_planning, container, false);
 
-        infos = new InfosPDF(rootView.getContext());
-
-        List<TaskObject> list = (List<TaskObject>) this.getArguments().getSerializable("list");
-        initList(list);
-        customAdapterTasks = new CustomAdapterTasks(listObjects, rootView.getContext());
-
-        ListView codeLearnLessons = (ListView) rootView.findViewById(R.id.listViewTasks);
-        codeLearnLessons.setAdapter(customAdapterTasks);
-
-        codeLearnLessons.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-
-                TaskObject to = customAdapterTasks.getTask(arg2);
-                Spectacle spectacle = to.getSpectacle();
-                if (spectacle != null){
-                    Intent t = new Intent(getActivity(), SpectacleActivity.class);
-                    Bundle mBundle = new Bundle();
-                    mBundle.putSerializable("spectacle", spectacle);
-                    t.putExtras(mBundle);
-                    getActivity().startActivity(t);
-                }
-            }
-        });
+        this.thisView = rootView;
+        this.asyncTask.delegate = this;
+        this.asyncTask.execute();
 
         return rootView;
     }
@@ -82,5 +63,59 @@ public class PlanningFragment extends Fragment {
         HashMap<String, String> BoutiqueNameNo = new HashMap<String, String>();
         BoutiqueNameNo.put(name, number);
         return BoutiqueNameNo;
+    }
+
+    @Override
+    public void onLoadList(Object liste) {
+        List<TaskObject> list = (List<TaskObject>) liste;
+        initList(list);
+        customAdapterTasks = new CustomAdapterTasks(listObjects, thisView.getContext());
+
+        ListView lv = (ListView) thisView.findViewById(R.id.listViewTasks);
+        lv.setAdapter(customAdapterTasks);
+
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+
+                TaskObject to = customAdapterTasks.getTask(arg2);
+                Spectacle spectacle = to.getSpectacle();
+                if (spectacle != null) {
+                    Intent t = new Intent(getActivity(), SpectacleActivity.class);
+                    Bundle mBundle = new Bundle();
+                    mBundle.putSerializable("spectacle", spectacle);
+                    t.putExtras(mBundle);
+                    getActivity().startActivity(t);
+                }
+            }
+        });
+    }
+
+    private class LoadTaskFragment extends AsyncTask<Void, Void, List<TaskObject>> {
+        private ProgressDialog dialog;
+        public AsyncResponse delegate=null;
+
+        @Override
+        protected void onPreExecute() {
+            dialog = new ProgressDialog(thisView.getContext());
+            dialog.setMessage("Chargement");
+            dialog.show();
+        }
+
+        @Override
+        protected List<TaskObject> doInBackground(Void... params) {
+            InfosPDF infos = new InfosPDF(thisView.getContext());
+            List<TaskObject> list = infos.getBestPlanning();
+            return list;
+        }
+
+        @Override
+        protected void onPostExecute(List<TaskObject> result) {
+            if (dialog.isShowing()) {
+                dialog.dismiss();
+            }
+            delegate.onLoadList(result);
+        }
     }
 }
