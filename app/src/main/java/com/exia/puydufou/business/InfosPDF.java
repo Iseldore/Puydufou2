@@ -293,11 +293,8 @@ public class InfosPDF {
         request.addProperty("id_spectacle", id_spectacle);
         request.addProperty("note", note);
         SoapObject result = sc.sendRequest(request);
-        NumberFormat nf = NumberFormat.getInstance(); // get instance for your locale
-        nf.setMaximumFractionDigits(2); // set decimal places
-        String s = nf.format(Double.parseDouble(result.getPropertyAsString(0))); // the parameter must be a long or double
-
-        return Double.parseDouble(s);
+        return (Double)result.getProperty(0);
+        //return Double.parseDouble(result.getPropertyAsString(0));
     }
 
     public List<Restaurant> getAllRestaurants() {
