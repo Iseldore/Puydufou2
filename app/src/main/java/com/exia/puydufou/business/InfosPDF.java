@@ -30,6 +30,8 @@ public class InfosPDF {
     private static final String METHOD_NAME_TEST_HELLO_PARAM = "testHelloParam";
     private static final String METHOD_NAME_GET_PLANNING = "getPlanning";
     private static final String METHOD_NAME_GET_BEST_PLANNING = "getBestPlanning";
+    private static final String METHOD_NAME_GET_PLANNING_WITH_HORAIRE = "getAllSpectaclesWithHoraires";
+
     private Context context;
 
     public InfosPDF(Context context){
@@ -39,6 +41,22 @@ public class InfosPDF {
 
     public List<Spectacle> getAllSpectacles() {
         SoapObject request = new SoapObject(NAMESPACE, METHOD_NAME_GET_PLANNING);
+        SoapObject result = sc.sendRequest(request);
+        if(result == null)
+            return null;
+
+        List<Spectacle> liste = new ArrayList<>();
+
+        for (int i = 0; i < result.getPropertyCount(); i++) {
+            SoapObject soapObject = (SoapObject)result.getProperty(i);
+            Spectacle spectacle = getSpectacle(soapObject);
+            liste.add(spectacle);
+        }
+        return liste;
+    }
+
+    public List<Spectacle> getAllSpectaclesWithHoraire() {
+        SoapObject request = new SoapObject(NAMESPACE, METHOD_NAME_GET_PLANNING_WITH_HORAIRE);
         SoapObject result = sc.sendRequest(request);
         if(result == null)
             return null;

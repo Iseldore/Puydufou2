@@ -107,7 +107,7 @@ public class PlanningManuelActivity extends ListActivity implements AsyncRespons
         @Override
         protected List<Spectacle> doInBackground(Void... params) {
             InfosPDF infos = new InfosPDF(context);
-            List<Spectacle> list = infos.getAllSpectacles();
+            List<Spectacle> list = infos.getAllSpectaclesWithHoraire();
             return list;
         }
 
