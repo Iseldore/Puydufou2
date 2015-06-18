@@ -6,12 +6,14 @@ import android.graphics.Bitmap;
 import com.exia.puydufou.data.SoapCommunicator;
 import com.exia.puydufou.common.Storage;
 import com.exia.puydufou.entity.Boutique;
+import com.exia.puydufou.entity.Restaurant;
 import com.exia.puydufou.entity.Spectacle;
 import com.exia.puydufou.entity.TaskObject;
 
 import org.ksoap2.serialization.SoapObject;
 
 import java.net.SocketException;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -24,6 +26,7 @@ import java.util.List;
 
 public class InfosPDF {
     private static final String METHOD_NAME_GET_BOUTIQUES = "getAllBoutiques";
+    private static final String METHOD_NAME_GET_RESTAURANTS = "getAllRestaurants";
     private SoapCommunicator sc;
     private static final String NAMESPACE = "http://puydufou.exia.com/";
     private static final String METHOD_NAME_TEST_HELLO = "testHello";
@@ -31,6 +34,8 @@ public class InfosPDF {
     private static final String METHOD_NAME_GET_PLANNING = "getPlanning";
     private static final String METHOD_NAME_GET_BEST_PLANNING = "getBestPlanning";
     private static final String METHOD_NAME_GET_PLANNING_WITH_HORAIRE = "getAllSpectaclesWithHoraires";
+    private static final String METHOD_NAME_SET_NOTE = "noteSpectacle";
+
 
     private Context context;
 
@@ -114,7 +119,7 @@ public class InfosPDF {
 
         SoapObject note = (SoapObject) soapObjectSp.getProperty("IDnote");
         spectacle.setNb_notes(Integer.parseInt(note.getPropertyAsString("nbNotes")));
-        spectacle.setNote_moy(Double.parseDouble(note.getPropertyAsString("nbNotes")));
+        spectacle.setNote_moy(Double.parseDouble(note.getPropertyAsString("noteMoy")));
 
         SoapObject gps = (SoapObject) soapObjectSp.getProperty("IDlocalisation");
         spectacle.setLatitude(Double.parseDouble(gps.getPropertyAsString("latitude")));
@@ -155,6 +160,31 @@ public class InfosPDF {
         return boutique;
     }
 
+    public Restaurant getRestaurant(SoapObject soapObject){
+        Restaurant restaurant = new Restaurant();
+
+        restaurant.setNomRestaurant(soapObject.getPropertyAsString("nomRestaurant"));
+        restaurant.setDescriptionRestaurant(soapObject.getPropertyAsString("descriptionRestaurant"));
+        restaurant.setIdRestaurant(soapObject.getPropertyAsString("IDrestaurant"));
+
+        SoapObject notes = (SoapObject) soapObject.getProperty("IDnote");
+        restaurant.setNbNotes(Integer.parseInt(notes.getPropertyAsString("nbNotes")));
+        restaurant.setNoteMoy(Double.parseDouble(notes.getPropertyAsString("noteMoy")));
+
+        SoapObject gps = (SoapObject) soapObject.getProperty("IDlocalisation");
+        restaurant.setLatitude(Double.parseDouble(gps.getPropertyAsString("latitude")));
+        restaurant.setLongitude(Double.parseDouble(gps.getPropertyAsString("longitude")));
+
+        Storage storage = new Storage(context);
+        Bitmap bitmap = storage.getBitmap("http://10.176.130.60/PuyDuFou/img_restaurants/"+soapObject.getPropertyAsString("urlRestaurant"));
+        String url = "restaurant_"+restaurant.getIdRestaurant()+".jpg";
+        System.err.println("ID Restaurant = " + restaurant.getIdRestaurant());
+        storage.saveImageToInternalStorage(bitmap, url);
+        restaurant.setUrl(url);
+
+        return restaurant;
+    }
+    
     public List<Boutique> getAllBoutiques() {
         SoapObject request = new SoapObject(NAMESPACE, METHOD_NAME_GET_BOUTIQUES);
         SoapObject result = sc.sendRequest(request);
@@ -219,9 +249,37 @@ public class InfosPDF {
 
         return liste;
     }
-}
-/*
 
+    public double setNote(String id_spectacle, String note){
+        SoapObject request = new SoapObject(NAMESPACE, METHOD_NAME_SET_NOTE);
+        request.addProperty("id_spectacle", id_spectacle);
+        request.addProperty("note", note);
+        SoapObject result = sc.sendRequest(request);
+        NumberFormat nf = NumberFormat.getInstance(); // get instance for your locale
+        nf.setMaximumFractionDigits(2); // set decimal places
+        String s = nf.format(Double.parseDouble(result.getPropertyAsString(0))); // the parameter must be a long or double
+
+        return Double.parseDouble(s);
+    }
+
+    public List<Restaurant> getAllRestaurants() {
+        SoapObject request = new SoapObject(NAMESPACE, METHOD_NAME_GET_RESTAURANTS);
+        SoapObject result = sc.sendRequest(request);
+        if(result == null)
+            return null;
+
+        List<Restaurant> liste = new ArrayList<>();
+
+        for (int i = 0; i < result.getPropertyCount(); i++) {
+            SoapObject soapObject = (SoapObject) result.getProperty(i);
+            Restaurant restaurant = getRestaurant(soapObject);
+            liste.add(restaurant);
+        }
+        return liste;
+    }
+}
+
+/*
 public class InfosPDF {
     private Context context;
 
@@ -231,7 +289,7 @@ public class InfosPDF {
 
     public List<Spectacle> getAllSpectacles() {
         List<Spectacle> list = new ArrayList<>();
-        for (int i = 1; i <= 30; i++) {
+        for (int i = 1; i <= 9; i++) {
             Spectacle spectacle = new Spectacle();
             spectacle.setId_spectacle(String.valueOf(i));
             spectacle.setNom_spectacle("Spectacle " + i);
@@ -239,7 +297,7 @@ public class InfosPDF {
             Date duree = null;
             SimpleDateFormat format = new SimpleDateFormat("HH:mm");
             try {
-                horaire = format.parse(i+":20");
+                horaire = format.parse("17:0"+i);
                 duree = format.parse("00:15");
             } catch (ParseException e) {
                 // TODO Auto-generated catch block
@@ -248,6 +306,8 @@ public class InfosPDF {
             spectacle.setHoraires(horaire);
             spectacle.setDuree_spectacle(duree);
             spectacle.setInfo_spectacle("Informations du spectacle " + i);
+            spectacle.setNb_notes(5);
+            spectacle.setNote_moy(3.75);
 
             // Storage storage = new Storage(context);
             //Bitmap bitmap = storage.getBitmap("http://towtows.free.fr/eagle4/images/logo.gif");
@@ -281,6 +341,14 @@ public class InfosPDF {
 
     public List<TaskObject> getBestPlanning() {
         return null;
+    }
+
+    public List<Spectacle> getAllSpectaclesWithHoraire() {
+        return null;
+    }
+
+    public double setNote(String id_spectacle, String note) {
+        return 3.5;
     }
 }
 */

@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class SQLiteCommunicator extends SQLiteOpenHelper {
     //version number to upgrade database version
+
     private static final int DATABASE_VERSION = 5;
 
     // Database Name

@@ -35,5 +35,9 @@
     <!-- Content Description -->
     <string name="desc_list_item_icon">Item Icon</string>
 
+    <string name="text_label_1">Rate</string>
+    <string name="button_label">Noter</string>
+    <string name="text_label_2">Result: </string>
+
 
 </resources>

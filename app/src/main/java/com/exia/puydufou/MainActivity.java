@@ -6,6 +6,7 @@ import java.util.List;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Bundle;
@@ -21,6 +22,7 @@ import android.widget.ListView;
 
 import com.exia.puydufou.adapter.NavDrawerListAdapter;
 import com.exia.puydufou.business.InfosPDF;
+import com.exia.puydufou.business.ServiceNotif;
 import com.exia.puydufou.business.TestInfos;
 import com.exia.puydufou.entity.Boutique;
 import com.exia.puydufou.entity.Spectacle;
@@ -57,6 +59,8 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        startService(new Intent(this, ServiceNotif.class)); //service de notification
 
         mTitle = mDrawerTitle = getTitle();
 

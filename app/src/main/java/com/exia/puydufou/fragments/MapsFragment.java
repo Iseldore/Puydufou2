@@ -60,7 +60,7 @@ public class MapsFragment extends FragmentActivity implements LocationListener {
         // Getting GoogleMap object from the fragment
         googleMap = fm.getMap();
 
-        Marker marker = googleMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title(nom));
+        final Marker marker = googleMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title(nom));
         // Enabling MyLocation Layer of Google Map
         googleMap.setMyLocationEnabled(true);
 
@@ -78,27 +78,35 @@ public class MapsFragment extends FragmentActivity implements LocationListener {
         Location location = locationManager.getLastKnownLocation(provider);
 
         if(location!=null){
-           // onLocationChanged(location);
+            final LatLngBounds.Builder builder = new LatLngBounds.Builder();
+            builder.include(marker.getPosition());
+            LatLng current = new LatLng(location.getLatitude(), location.getLongitude());
+            builder.include(current);
+            LatLngBounds bounds = builder.build();
+            int padding = 5; // offset from edges of the map in pixels
+
+            final CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+
+            //googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+
+
+            googleMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
+                @Override
+                public void onMapLoaded() {
+                    googleMap.animateCamera(cu);
+                }
+            });
+        }
+        else{
+            googleMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
+                @Override
+                public void onMapLoaded() {
+                    googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), 15));
+                }
+            });
         }
 
-        final LatLngBounds.Builder builder = new LatLngBounds.Builder();
-        builder.include(marker.getPosition());
-        LatLng current = new LatLng(location.getLatitude(), location.getLongitude());
-        builder.include(current);
-        LatLngBounds bounds = builder.build();
-        int padding = 5; // offset from edges of the map in pixels
 
-        final CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
-
-        //googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
-
-
-        googleMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
-            @Override
-            public void onMapLoaded() {
-                googleMap.animateCamera(cu);
-            }
-        });
 
         locationManager.requestLocationUpdates(provider, 20000, 0, this);
 

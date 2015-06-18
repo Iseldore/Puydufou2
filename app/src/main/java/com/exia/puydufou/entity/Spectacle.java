@@ -23,6 +23,16 @@ public class Spectacle implements Serializable {
     private Date horaires;
     private String url;
 
+    public Boolean getIsNotified() {
+        return isNotified;
+    }
+
+    public void setIsNotified(Boolean isNotified) {
+        this.isNotified = isNotified;
+    }
+
+    private Boolean isNotified = false;
+
     public double getLatitude() {
         return latitude;
     }

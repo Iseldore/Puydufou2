@@ -24,17 +24,31 @@ public class SpectacleActivity extends Activity{
 
         TextView nom = (TextView) findViewById(R.id.nomSpectacle);
         TextView infos = (TextView) findViewById(R.id.infoSpectacle);
+        TextView note = (TextView) findViewById(R.id.textViewNote);
+
         Button button = (Button) findViewById(R.id.button);
+        Button buttonNote = (Button) findViewById(R.id.buttonNote);
 
         nom.setText(spectacle.getNom_spectacle());
         infos.setText(spectacle.getInfo_spectacle());
-
+        note.setText("Note : "+String.valueOf(spectacle.getNote_moy())+"/5.0 (Votes : "+String.valueOf(spectacle.getNb_notes())+")");
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent t = new Intent(SpectacleActivity.this, MapsFragment.class);
                 Bundle mBundle = new Bundle();
                 mBundle.putSerializable("object", spectacle);
+                t.putExtras(mBundle);
+                SpectacleActivity.this.startActivity(t);
+            }
+        });
+
+        buttonNote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent t = new Intent(SpectacleActivity.this, RatingActivity.class);
+                Bundle mBundle = new Bundle();
+                mBundle.putSerializable("spectacle", spectacle);
                 t.putExtras(mBundle);
                 SpectacleActivity.this.startActivity(t);
             }

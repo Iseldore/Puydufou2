@@ -48,7 +48,10 @@
         <activity android:name=".activities.SpectacleActivity"></activity>
         <activity android:name=".activities.BoutiqueActivity"></activity>
         <activity android:name=".activities.PlanningManuelActivity"></activity>
+        <activity android:name=".activities.RatingActivity"></activity>
+        <activity android:name=".activities.RestaurantActivity"></activity>
         <activity android:name=".fragments.MapsFragment"></activity>
+        <service android:enabled="true" android:name="com.exia.puydufou.business.ServiceNotif"/>
     </application>
 
 </manifest>

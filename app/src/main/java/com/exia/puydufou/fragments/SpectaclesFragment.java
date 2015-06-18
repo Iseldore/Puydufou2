@@ -29,7 +29,6 @@ public class SpectaclesFragment extends Fragment implements AsyncResponse{
     private LoadSpectacleFragment asyncTask = new LoadSpectacleFragment();
     private View thisView;
     private List<Spectacle> listObjects = new ArrayList<>();
-    InfosPDF infos;
     private CustomAdapterSpectacle customAdapterSpectacle;
 
     @Override
@@ -80,6 +79,7 @@ public class SpectaclesFragment extends Fragment implements AsyncResponse{
 
                 Intent t = new Intent(getActivity(), SpectacleActivity.class);
                 Bundle mBundle = new Bundle();
+                mBundle.putInt("key", 1);
                 mBundle.putSerializable("spectacle", spectacle);
                 t.putExtras(mBundle);
                 getActivity().startActivity(t);
