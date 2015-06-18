@@ -31,7 +31,8 @@ public class SpectacleActivity extends Activity{
 
         nom.setText(spectacle.getNom_spectacle());
         infos.setText(spectacle.getInfo_spectacle());
-        note.setText("Note : "+String.valueOf(spectacle.getNote_moy())+"/5.0 (Votes : "+String.valueOf(spectacle.getNb_notes())+")");
+        double roundedNote = Math.round(spectacle.getNote_moy() * 100) / 100.0;
+        note.setText("Note : "+String.valueOf(roundedNote)+"/5.0 (Votes : "+String.valueOf(spectacle.getNb_notes())+")");
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
