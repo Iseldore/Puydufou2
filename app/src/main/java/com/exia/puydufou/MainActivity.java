@@ -24,11 +24,13 @@ import com.exia.puydufou.business.InfosPDF;
 import com.exia.puydufou.business.TestInfos;
 import com.exia.puydufou.entity.Boutique;
 import com.exia.puydufou.entity.Spectacle;
+import com.exia.puydufou.entity.TaskObject;
 import com.exia.puydufou.fragments.BoutiquesFragment;
 import com.exia.puydufou.fragments.HomeFragment;
 import com.exia.puydufou.fragments.InformationsFragment;
 import com.exia.puydufou.fragments.PlanFragment;
 import com.exia.puydufou.fragments.PlanningFragment;
+import com.exia.puydufou.fragments.PlanningManuelFragment;
 import com.exia.puydufou.fragments.RestaurantsFragment;
 import com.exia.puydufou.fragments.SpectaclesFragment;
 import com.exia.puydufou.entity.NavDrawerItem;
@@ -85,6 +87,8 @@ public class MainActivity extends Activity {
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[5], navMenuIcons.getResourceId(5, -1)));
 
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[6], navMenuIcons.getResourceId(6, -1)));
+
+        navDrawerItems.add(new NavDrawerItem(navMenuTitles[7], navMenuIcons.getResourceId(7, -1)));
 
 
         // Recycle the typed array
@@ -187,26 +191,32 @@ public class MainActivity extends Activity {
                 break;
             case 1:
                 fragment = new PlanningFragment();
+                List<TaskObject> listTasks = infos.getBestPlanning();
+                args.putSerializable("list", (ArrayList<TaskObject>) listTasks);
+                fragment.setArguments(args);
                 break;
             case 2:
+                fragment = new PlanningManuelFragment();
+                break;
+            case 3:
                 fragment = new SpectaclesFragment();
                 List<Spectacle> listSpectacles = infos.getAllSpectacles();
                 args.putSerializable("list", (ArrayList<Spectacle>) listSpectacles);
                 fragment.setArguments(args);
                 break;
-            case 3:
+            case 4:
                 fragment = new PlanFragment();
                 break;
-            case 4:
+            case 5:
                 fragment = new RestaurantsFragment();
                 break;
-            case 5:
+            case 6:
                 fragment = new BoutiquesFragment();
                 List<Boutique> listBoutiques = infos.getAllBoutiques();
                 args.putSerializable("list", (ArrayList<Boutique>) listBoutiques);
                 fragment.setArguments(args);
                 break;
-            case 6:
+            case 7:
                 fragment = new InformationsFragment();
                 break;
 

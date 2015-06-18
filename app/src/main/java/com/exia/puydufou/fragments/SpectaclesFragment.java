@@ -1,7 +1,9 @@
 package com.exia.puydufou.fragments;
 
 import android.app.Fragment;
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +15,9 @@ import com.exia.puydufou.business.InfosPDF;
 import com.exia.puydufou.R;
 import com.exia.puydufou.activities.SpectacleActivity;
 import com.exia.puydufou.adapter.CustomAdapterSpectacle;
+import com.exia.puydufou.common.AsyncResponse;
+import com.exia.puydufou.entity.Boutique;
+import com.exia.puydufou.entity.Spectacle;
 import com.exia.puydufou.entity.Spectacle;
 
 import java.util.ArrayList;
@@ -20,8 +25,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SpectaclesFragment extends Fragment {
-
+public class SpectaclesFragment extends Fragment implements AsyncResponse{
+    private LoadSpectacleFragment asyncTask = new LoadSpectacleFragment();
+    private View thisView;
     private List<Spectacle> listObjects = new ArrayList<>();
     InfosPDF infos;
     private CustomAdapterSpectacle customAdapterSpectacle;
@@ -31,17 +37,41 @@ public class SpectaclesFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_spectacles, container, false);
-        infos = new InfosPDF(rootView.getContext());
+        this.thisView = rootView;
 
-        List<Spectacle> list = (List<Spectacle>) this.getArguments().getSerializable("list");
+        this.asyncTask.delegate = this;
+        this.asyncTask.execute();
 
+        return rootView;
+    }
+
+    List<Map<String, String>> spectacleList = new ArrayList<Map<String, String>>();
+
+    private void initList(List<Spectacle> list) {
+        if(list != null) {
+            for (int i = 0; i < list.size(); i++) {
+                spectacleList.add(createSpectacle("spectacle", list.get(i).getNom_spectacle()));
+                listObjects.add(list.get(i));
+            }
+        }
+    }
+
+    private HashMap<String, String> createSpectacle(String name, String number) {
+        HashMap<String, String> spectacleNameNo = new HashMap<String, String>();
+        spectacleNameNo.put(name, number);
+        return spectacleNameNo;
+    }
+
+    @Override
+    public void onLoadList(Object liste) {
+        List<Spectacle> list = (List<Spectacle>) liste;
         initList(list);
-        customAdapterSpectacle = new CustomAdapterSpectacle(listObjects, rootView.getContext());
+        customAdapterSpectacle = new CustomAdapterSpectacle(listObjects, thisView.getContext());
 
-        ListView codeLearnLessons = (ListView) rootView.findViewById(R.id.listView1);
-        codeLearnLessons.setAdapter(customAdapterSpectacle);
+        ListView lv = (ListView) thisView.findViewById(R.id.listView1);
+        lv.setAdapter(customAdapterSpectacle);
 
-        codeLearnLessons.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
@@ -56,25 +86,32 @@ public class SpectaclesFragment extends Fragment {
 
             }
         });
-
-        return rootView;
     }
 
-    List<Map<String, String>> spectacleList = new ArrayList<Map<String, String>>();
+    private class LoadSpectacleFragment extends AsyncTask<Void, Void, List<Spectacle>> {
+        private ProgressDialog dialog;
+        public AsyncResponse delegate=null;
 
-    private void initList(List<Spectacle> list) {
-        //list = infos.getAllSpectacles();
-        if(list != null) {
-            for (int i = 0; i < list.size(); i++) {
-                spectacleList.add(createSpectacle("spectacle", list.get(i).getNom_spectacle()));
-                listObjects.add(list.get(i));
-            }
+        @Override
+        protected void onPreExecute() {
+            dialog = new ProgressDialog(thisView.getContext());
+            dialog.setMessage("Chargement");
+            dialog.show();
         }
-    }
 
-    private HashMap<String, String> createSpectacle(String name, String number) {
-        HashMap<String, String> spectacleNameNo = new HashMap<String, String>();
-        spectacleNameNo.put(name, number);
-        return spectacleNameNo;
+        @Override
+        protected List<Spectacle> doInBackground(Void... params) {
+            InfosPDF infos = new InfosPDF(thisView.getContext());
+            List<Spectacle> list = infos.getAllSpectacles();
+            return list;
+        }
+
+        @Override
+        protected void onPostExecute(List<Spectacle> result) {
+            if (dialog.isShowing()) {
+                dialog.dismiss();
+            }
+            delegate.onLoadList(result);
+        }
     }
 }

@@ -10,7 +10,8 @@
     <!-- Nav Drawer Menu Items -->
     <string-array name="nav_drawer_items">
         <item >Accueil</item>
-        <item>Planning</item>
+        <item>Planning auto</item>
+        <item>Planning manuel</item>
         <item >Spectacles</item>
         <item >Plan</item>
         <item >Restaurants</item>
@@ -22,6 +23,7 @@
     <!-- Keep them in order as the titles are in -->
     <array name="nav_drawer_icons">
         <item>@drawable/ic_home</item>
+        <item>@drawable/planning</item>
         <item>@drawable/planning</item>
         <item>@drawable/spectacle</item>
         <item>@drawable/plan</item>

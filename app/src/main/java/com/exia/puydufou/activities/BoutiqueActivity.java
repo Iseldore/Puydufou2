@@ -34,7 +34,7 @@ public class BoutiqueActivity extends Activity {
             public void onClick(View v) {
                 Intent t = new Intent(BoutiqueActivity.this, MapsFragment.class);
                 Bundle mBundle = new Bundle();
-                mBundle.putSerializable("boutique", boutique);
+                mBundle.putSerializable("object", boutique);
                 t.putExtras(mBundle);
                 BoutiqueActivity.this.startActivity(t);
             }

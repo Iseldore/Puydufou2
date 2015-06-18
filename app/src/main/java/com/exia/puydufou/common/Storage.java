@@ -67,7 +67,7 @@ public class Storage {
         }
         catch (FileNotFoundException e)
         {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
         return b;
     }

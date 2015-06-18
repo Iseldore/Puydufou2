@@ -35,7 +35,7 @@ public class MapsFragment extends FragmentActivity implements LocationListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
-        Object object = (Object) getIntent().getSerializableExtra("object");
+        Object object = getIntent().getSerializableExtra("object");
         double latitude = 0;
         double longitude = 0;
         String nom = null;
@@ -46,6 +46,7 @@ public class MapsFragment extends FragmentActivity implements LocationListener {
             longitude = spectacle.getLongitude();
             nom = spectacle.getNom_spectacle();
         }
+
         else if(object.getClass() == Boutique.class){
             Boutique boutique = (Boutique) object;
             latitude = boutique.getLatitude();

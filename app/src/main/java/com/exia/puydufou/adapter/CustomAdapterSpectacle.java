@@ -58,25 +58,15 @@ public class CustomAdapterSpectacle extends BaseAdapter {
             arg1 = inflater.inflate(R.layout.listitemspectacle, arg2,false);
         }
 
+        Spectacle spectacle = listeSpectacle.get(arg0);
+
         TextView nomSpectacle = (TextView)arg1.findViewById(R.id.textView1);
         TextView dureeSpectacle = (TextView)arg1.findViewById(R.id.textView2);
         TextView heureSpectacle = (TextView)arg1.findViewById(R.id.textView3);
         img = (ImageView)arg1.findViewById(R.id.imageView1);
 
-
-        Spectacle spectacle = listeSpectacle.get(arg0);
-
         nomSpectacle.setText(spectacle.getNom_spectacle());
-       /* try {
-            Bitmap bitmap = BitmapFactory.decodeStream((InputStream)new URL("http://10.176.130.60/PuyDuFou/img_spectacles/" + spectacle.getUrl()).getContent());
-            img.setImageBitmap(bitmap);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        //new LoadImage().execute("http://10.176.130.60/PuyDuFou/img_spectacles/" + spectacle.getUrl());
-*/
+
         Storage storage = new Storage(context);
         img.setImageBitmap(storage.getThumbnail(spectacle.getUrl()));
         android.text.format.DateFormat df = new android.text.format.DateFormat();

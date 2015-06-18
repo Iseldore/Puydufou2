@@ -7,17 +7,21 @@ import com.exia.puydufou.data.SoapCommunicator;
 import com.exia.puydufou.common.Storage;
 import com.exia.puydufou.entity.Boutique;
 import com.exia.puydufou.entity.Spectacle;
+import com.exia.puydufou.entity.TaskObject;
 
 import org.ksoap2.serialization.SoapObject;
 
+import java.net.SocketException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
  * Created by Iseldore on 15/06/2015.
  */
+/*
 public class InfosPDF {
     private static final String METHOD_NAME_GET_BOUTIQUES = "getAllBoutiques";
     private SoapCommunicator sc;
@@ -25,6 +29,7 @@ public class InfosPDF {
     private static final String METHOD_NAME_TEST_HELLO = "testHello";
     private static final String METHOD_NAME_TEST_HELLO_PARAM = "testHelloParam";
     private static final String METHOD_NAME_GET_PLANNING = "getPlanning";
+    private static final String METHOD_NAME_GET_BEST_PLANNING = "getBestPlanning";
     private Context context;
 
     public InfosPDF(Context context){
@@ -42,67 +47,95 @@ public class InfosPDF {
 
         for (int i = 0; i < result.getPropertyCount(); i++) {
             SoapObject soapObject = (SoapObject)result.getProperty(i);
-
-            SoapObject soapObjectSp = (SoapObject) soapObject.getProperty("IDspectacle");
-            // Pour chaque spectacle
-            Spectacle spectacle = new Spectacle();
-            spectacle.setNom_spectacle(soapObjectSp.getPropertyAsString("nomSpectacle"));
-            spectacle.setInfo_spectacle(soapObjectSp.getPropertyAsString("infoSpectacle"));
-
-            SimpleDateFormat formatDuree = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            try {
-                String time = soapObjectSp.getPropertyAsString("dureeSpectacle");
-                time = time.replace("T", " ");
-                //time = time.replace("+01:00", "");
-                spectacle.setDuree_spectacle(formatDuree.parse(time));
-            } catch (ParseException e) {
-                e.printStackTrace();
-                System.err.println(e.getMessage());
-            }
-
-            SimpleDateFormat formatCreation = new SimpleDateFormat("yyyy-MM-dd");
-            try {
-                spectacle.setDatecreation_spectacle(formatCreation.parse(soapObjectSp.getPropertyAsString("datecreationSpectacle")));
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            spectacle.setNbacteur_spectacle(Integer.parseInt(soapObjectSp.getPropertyAsString("nbacteurSpectacle")));
-            spectacle.setEvhistorique_spectacle(soapObjectSp.getPropertyAsString("evhistoriqueSpectacle"));
-//            spectacle.setNote_moy(Integer.parseInt(soapObjectSp.getPropertyAsString("noteMoy")));
-            //   spectacle.setNb_notes(Integer.parseInt(soapObjectSp.getPropertyAsString("nbNotes")));
-            spectacle.setId_spectacle(soapObjectSp.getPropertyAsString("IDspectacle"));
-
-            SimpleDateFormat formatHoraire = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            try {
-                String time = soapObject.getPropertyAsString("horaireSpectacle");
-                time = time.replace("T", " ");
-                //time = time.replace("+01:00", "");
-                spectacle.setHoraires(formatHoraire.parse(time));
-            } catch (ParseException e) {
-                e.printStackTrace();
-                System.err.println(e.getMessage());
-            }
-
-            SoapObject note = (SoapObject) soapObjectSp.getProperty("IDnote");
-            spectacle.setNb_notes(Integer.parseInt(note.getPropertyAsString("nbNotes")));
-            spectacle.setNote_moy(Double.parseDouble(note.getPropertyAsString("nbNotes")));
-
-            SoapObject gps = (SoapObject) soapObjectSp.getProperty("IDlocalisation");
-            spectacle.setLatitude(Double.parseDouble(gps.getPropertyAsString("latitude")));
-            spectacle.setLongitude(Double.parseDouble(gps.getPropertyAsString("longitude")));
-
-            Storage storage = new Storage(context);
-            System.err.println("http://10.176.130.60/PuyDuFou/img_spectacles/"+soapObjectSp.getPropertyAsString("urlSpectacle"));
-            Bitmap bitmap = storage.getBitmap("http://10.176.130.60/PuyDuFou/img_spectacles/"+soapObjectSp.getPropertyAsString("urlSpectacle"));
-            String url = "spectacle_"+spectacle.getId_spectacle()+".jpg";
-            storage.saveImageToInternalStorage(bitmap, url);
-            spectacle.setUrl(url);
-
+            Spectacle spectacle = getSpectacle(soapObject);
             liste.add(spectacle);
         }
         return liste;
     }
 
+    public Spectacle getSpectacle(SoapObject soapObject){
+        SoapObject soapObjectSp = (SoapObject) soapObject.getProperty("IDspectacle");
+        // Pour chaque spectacle
+        Spectacle spectacle = new Spectacle();
+        spectacle.setNom_spectacle(soapObjectSp.getPropertyAsString("nomSpectacle"));
+        spectacle.setInfo_spectacle(soapObjectSp.getPropertyAsString("infoSpectacle"));
+
+        SimpleDateFormat formatDuree = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            String time = soapObjectSp.getPropertyAsString("dureeSpectacle");
+            time = time.replace("T", " ");
+            //time = time.replace("+01:00", "");
+            spectacle.setDuree_spectacle(formatDuree.parse(time));
+        } catch (ParseException e) {
+            e.printStackTrace();
+            System.err.println(e.getMessage());
+        }
+
+        SimpleDateFormat formatCreation = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            spectacle.setDatecreation_spectacle(formatCreation.parse(soapObjectSp.getPropertyAsString("datecreationSpectacle")));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        spectacle.setNbacteur_spectacle(Integer.parseInt(soapObjectSp.getPropertyAsString("nbacteurSpectacle")));
+        spectacle.setEvhistorique_spectacle(soapObjectSp.getPropertyAsString("evhistoriqueSpectacle"));
+//            spectacle.setNote_moy(Integer.parseInt(soapObjectSp.getPropertyAsString("noteMoy")));
+        //   spectacle.setNb_notes(Integer.parseInt(soapObjectSp.getPropertyAsString("nbNotes")));
+        spectacle.setId_spectacle(soapObjectSp.getPropertyAsString("IDspectacle"));
+
+        SimpleDateFormat formatHoraire = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            String time = soapObject.getPropertyAsString("horaireSpectacle");
+            time = time.replace("T", " ");
+            //time = time.replace("+01:00", "");
+            spectacle.setHoraires(formatHoraire.parse(time));
+        } catch (ParseException e) {
+            e.printStackTrace();
+            System.err.println(e.getMessage());
+        }
+
+        SoapObject note = (SoapObject) soapObjectSp.getProperty("IDnote");
+        spectacle.setNb_notes(Integer.parseInt(note.getPropertyAsString("nbNotes")));
+        spectacle.setNote_moy(Double.parseDouble(note.getPropertyAsString("nbNotes")));
+
+        SoapObject gps = (SoapObject) soapObjectSp.getProperty("IDlocalisation");
+        spectacle.setLatitude(Double.parseDouble(gps.getPropertyAsString("latitude")));
+        spectacle.setLongitude(Double.parseDouble(gps.getPropertyAsString("longitude")));
+
+        Storage storage = new Storage(context);
+        System.err.println("http://10.176.130.60/PuyDuFou/img_spectacles/"+soapObjectSp.getPropertyAsString("urlSpectacle"));
+        Bitmap bitmap = storage.getBitmap("http://10.176.130.60/PuyDuFou/img_spectacles/"+soapObjectSp.getPropertyAsString("urlSpectacle"));
+        String url = "spectacle_"+spectacle.getId_spectacle()+".jpg";
+        storage.saveImageToInternalStorage(bitmap, url);
+        spectacle.setUrl(url);
+
+        return spectacle;
+    }
+
+    public Boutique getBoutique(SoapObject soapObject){
+        Boutique boutique = new Boutique();
+
+        boutique.setNomBoutique(soapObject.getPropertyAsString("nomBoutique"));
+        boutique.setDescriptionBoutique(soapObject.getPropertyAsString("descriptionBoutique"));
+        boutique.setIdBoutique(soapObject.getPropertyAsString("IDboutique"));
+
+        SoapObject notes = (SoapObject) soapObject.getProperty("IDnote");
+        boutique.setNbNotes(Integer.parseInt(notes.getPropertyAsString("nbNotes")));
+        boutique.setNoteMoy(Double.parseDouble(notes.getPropertyAsString("noteMoy")));
+
+        SoapObject gps = (SoapObject) soapObject.getProperty("IDlocalisation");
+        boutique.setLatitude(Double.parseDouble(gps.getPropertyAsString("latitude")));
+        boutique.setLongitude(Double.parseDouble(gps.getPropertyAsString("longitude")));
+
+        Storage storage = new Storage(context);
+        Bitmap bitmap = storage.getBitmap("http://10.176.130.60/PuyDuFou/img_boutiques/"+soapObject.getPropertyAsString("urlBoutique"));
+        String url = "boutique_"+boutique.getIdBoutique()+".jpg";
+        System.err.println("ID Boutique = " + boutique.getIdBoutique());
+        storage.saveImageToInternalStorage(bitmap, url);
+        boutique.setUrl(url);
+
+        return boutique;
+    }
 
     public List<Boutique> getAllBoutiques() {
         SoapObject request = new SoapObject(NAMESPACE, METHOD_NAME_GET_BOUTIQUES);
@@ -114,29 +147,121 @@ public class InfosPDF {
 
         for (int i = 0; i < result.getPropertyCount(); i++) {
             SoapObject soapObject = (SoapObject) result.getProperty(i);
-            Boutique boutique = new Boutique();
-
-            boutique.setNomBoutique(soapObject.getPropertyAsString("nomBoutique"));
-            boutique.setDescriptionBoutique(soapObject.getPropertyAsString("descriptionBoutique"));
-            boutique.setIdBoutique(soapObject.getPropertyAsString("IDboutique"));
-
-            SoapObject notes = (SoapObject) soapObject.getProperty("IDnote");
-            boutique.setNbNotes(Integer.parseInt(notes.getPropertyAsString("nbNotes")));
-            boutique.setNoteMoy(Double.parseDouble(notes.getPropertyAsString("noteMoy")));
-
-            SoapObject gps = (SoapObject) soapObject.getProperty("IDlocalisation");
-            boutique.setLatitude(Double.parseDouble(gps.getPropertyAsString("latitude")));
-            boutique.setLongitude(Double.parseDouble(gps.getPropertyAsString("longitude")));
-
-            Storage storage = new Storage(context);
-            Bitmap bitmap = storage.getBitmap("http://10.176.130.60/PuyDuFou/img_boutiques/"+soapObject.getPropertyAsString("urlBoutique"));
-            String url = "boutique_"+boutique.getIdBoutique()+".jpg";
-            System.err.println("ID Boutique = "+boutique.getIdBoutique());
-            storage.saveImageToInternalStorage(bitmap, url);
-            boutique.setUrl(url);
-
+            Boutique boutique = getBoutique(soapObject);
             liste.add(boutique);
         }
         return liste;
+    }
+
+    public List<TaskObject> getBestPlanning(){
+        SoapObject request = new SoapObject(NAMESPACE, METHOD_NAME_GET_BEST_PLANNING);
+        SoapObject result = sc.sendRequest(request);
+
+        List<TaskObject> liste = new ArrayList<>();
+
+        for(int i = 0; i < result.getPropertyCount(); i++){
+            SoapObject soapObject = (SoapObject) result.getProperty(i);
+
+            TaskObject to = new TaskObject();
+            if(Integer.parseInt(soapObject.getPropertyAsString("IDhoraire")) != 0){
+                Spectacle spectacle = getSpectacle(soapObject);
+                to.setSpectacle(spectacle);
+                liste.add(to);
+            }
+            else{
+                SoapObject sp = (SoapObject) soapObject.getProperty("IDspectacle");
+                to.setNom(sp.getPropertyAsString("nomSpectacle"));
+
+                SimpleDateFormat formatDuree = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                try {
+                    String time = sp.getPropertyAsString("dureeSpectacle");
+                    time = time.replace("T", " ");
+                    //time = time.replace("+01:00", "");
+                    to.setDuree(formatDuree.parse(time));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                    System.err.println(e.getMessage());
+                }
+
+                SimpleDateFormat formatHoraire = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                try {
+                    String time = soapObject.getPropertyAsString("horaireSpectacle");
+                    time = time.replace("T", " ");
+                    //time = time.replace("+01:00", "");
+                    to.setHoraire(formatHoraire.parse(time));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                    System.err.println(e.getMessage());
+                }
+
+                liste.add(to);
+            }
+
+        }
+
+        return liste;
+    }
+}
+*/
+
+public class InfosPDF {
+    private Context context;
+
+    public InfosPDF(Context context){
+        this.context = context;
+    }
+
+    public List<Spectacle> getAllSpectacles() {
+        List<Spectacle> list = new ArrayList<>();
+        for (int i = 1; i <= 30; i++) {
+            Spectacle spectacle = new Spectacle();
+            spectacle.setId_spectacle(String.valueOf(i));
+            spectacle.setNom_spectacle("Spectacle " + i);
+            Date horaire = null;
+            Date duree = null;
+            SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+            try {
+                horaire = format.parse(i+":20");
+                duree = format.parse("00:15");
+            } catch (ParseException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            spectacle.setHoraires(horaire);
+            spectacle.setDuree_spectacle(duree);
+            spectacle.setInfo_spectacle("Informations du spectacle " + i);
+
+            // Storage storage = new Storage(context);
+            //Bitmap bitmap = storage.getBitmap("http://towtows.free.fr/eagle4/images/logo.gif");
+            String url = "spectacle_"+spectacle.getId_spectacle()+".jpg";
+            //storage.saveImageToInternalStorage(bitmap, url);
+            spectacle.setUrl(url);
+
+            list.add(spectacle);
+        }
+        return list;
+    }
+
+    public List<Boutique> getAllBoutiques() {
+        List<Boutique> list = new ArrayList<>();
+        for (int i = 1; i <= 10; i++) {
+            Boutique boutique = new Boutique();
+            boutique.setIdBoutique(String.valueOf(i));
+            boutique.setNomBoutique("Boutique" + i);
+            boutique.setDescriptionBoutique("Description boutique " + i);
+
+            // Storage storage = new Storage(context);
+            //Bitmap bitmap = storage.getBitmap("http://towtows.free.fr/eagle4/images/logo.gif");
+            String url = "boutique_"+boutique.getIdBoutique()+".jpg";
+            //storage.saveImageToInternalStorage(bitmap, url);
+            boutique.setUrl(url);
+
+            list.add(boutique);
+        }
+        return list;
+    }
+
+    public List<TaskObject> getBestPlanning() {
+        return null;
     }
 }

@@ -47,6 +47,7 @@
 
         <activity android:name=".activities.SpectacleActivity"></activity>
         <activity android:name=".activities.BoutiqueActivity"></activity>
+        <activity android:name=".activities.PlanningManuelActivity"></activity>
         <activity android:name=".fragments.MapsFragment"></activity>
     </application>
 
