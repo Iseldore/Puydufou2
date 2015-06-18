@@ -1,6 +1,8 @@
 package com.exia.puydufou.entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Iseldore on 16/06/2015.
@@ -14,6 +16,15 @@ public class Restaurant implements Serializable {
     private double noteMoy;
     private String url;
     private String idRestaurant;
+    private List<MenuRestau> menus = new ArrayList();
+
+    public void setListMenu(List<MenuRestau> menu){
+        this.menus = menu;
+    }
+
+    public List<MenuRestau> getListMenus(){
+        return menus;
+    }
 
     public String getIdRestaurant() {
         return idRestaurant;

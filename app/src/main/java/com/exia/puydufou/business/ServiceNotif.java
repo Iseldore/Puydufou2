@@ -77,7 +77,7 @@ public class ServiceNotif extends Service implements AsyncResponse{
                                 if (hh >= 24)
                                     hh = 0;
                                 System.err.println(hh + " hour " + mm + " min");
-                                if (hh == 23 && mm == 55) {
+                                if (hh == 23 && mm >= 55) {
                                     spectacle.setIsNotified(true);
                                     System.err.println("Notif pour : " + heure);
                                     IntentFilter intentFilter = new IntentFilter();

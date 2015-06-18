@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import com.exia.puydufou.data.SoapCommunicator;
 import com.exia.puydufou.common.Storage;
 import com.exia.puydufou.entity.Boutique;
+import com.exia.puydufou.entity.MenuRestau;
 import com.exia.puydufou.entity.Restaurant;
 import com.exia.puydufou.entity.Spectacle;
 import com.exia.puydufou.entity.TaskObject;
@@ -198,9 +199,30 @@ public class InfosPDF {
         storage.saveImageToInternalStorage(bitmap, url);
         restaurant.setUrl(url);
 
+        restaurant.setListMenu(getMenu(restaurant.getIdRestaurant()));
+
         return restaurant;
     }
-    
+
+    public List<MenuRestau> getMenu(String id_restaurant){
+        SoapObject request = new SoapObject(NAMESPACE, "getMenusByRestaurantId");
+        request.addProperty("id", id_restaurant);
+        SoapObject result = sc.sendRequest(request);
+        if(result == null)
+            return null;
+
+        List<MenuRestau> liste = new ArrayList<>();
+        for (int i = 0; i < result.getPropertyCount(); i++) {
+            SoapObject soapObject = (SoapObject)result.getProperty(i);
+            MenuRestau menu = new MenuRestau();
+            menu.setDescription(soapObject.getPropertyAsString("descriptionMenu"));
+            menu.setTarif(soapObject.getPropertyAsString("tarifMenu"));
+            liste.add(menu);
+        }
+
+        return liste;
+    }
+
     public List<Boutique> getAllBoutiques() {
         SoapObject request = new SoapObject(NAMESPACE, METHOD_NAME_GET_BOUTIQUES);
         SoapObject result = sc.sendRequest(request);
